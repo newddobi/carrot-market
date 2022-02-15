@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { cls } from "../libs/utils";
+import { cls } from "@libs/client/utils";
 import { useRouter } from "next/router";
 
 interface LayoutProps {
@@ -10,12 +10,7 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
-export default function Layout({
-  title,
-  canGoBack,
-  hasTabBar,
-  children,
-}: LayoutProps) {
+export default function Layout({ title, canGoBack, hasTabBar, children }: LayoutProps) {
   const router = useRouter();
   const onClick = () => {
     router.back();
@@ -41,9 +36,7 @@ export default function Layout({
             </svg>
           </button>
         ) : null}
-        {title ? (
-          <span className={cls(canGoBack ? "mx-auto" : "", "")}>{title}</span>
-        ) : null}
+        {title ? <span className={cls(canGoBack ? "mx-auto" : "", "")}>{title}</span> : null}
       </div>
       <div className={cls("pt-12", hasTabBar ? "pb-24" : "")}>{children}</div>
       {hasTabBar ? (
