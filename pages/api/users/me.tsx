@@ -12,19 +12,7 @@ declare module "iron-session" {
 }
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
-  const { token } = req.body;
-  const exists = await client.token.findUnique({
-    where: {
-      payload: token,
-    },
-    include: { user: true },
-  });
-  if (!exists) return res.status(404).end();
-  console.log(exists);
-  req.session.user = {
-    id: exists.userId,
-  };
-  await req.session.save();
+  console.log(req.session.user);
   res.status(200).end();
 }
 
