@@ -5,32 +5,15 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { withApiSession } from "@libs/server/withSession";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
-  if (req.method === "GET") {
-    const products = await client.product.findMany({
-      include: {
-        _count: {
-          select: {
-            favs: true,
-          },
-        },
-      },
-    });
-    res.json({
-      ok: true,
-      products,
-    });
-  }
+  const {
+    body: { question },
+    session: { user },
+  } = req;
+
   if (req.method === "POST") {
-    const {
-      body: { name, price, description },
-      session: { user },
-    } = req;
-    const product = await client.product.create({
+    const post = await client.post.create({
       data: {
-        name,
-        price: +price,
-        description,
-        image: "xx",
+        question,
         user: {
           connect: {
             id: user?.id,
@@ -40,9 +23,29 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
     });
     res.json({
       ok: true,
-      product,
+      post,
     });
-    res.status(200).end();
+  }
+
+  if (req.method === "GET") {
+    const posts = await client.post.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+          },
+        },
+        _count: {
+          select: {
+            wondering: true,
+            answers: true,
+          },
+        },
+      },
+    });
+    res.json({ ok: true, posts });
   }
 }
 
