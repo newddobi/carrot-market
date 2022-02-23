@@ -5,16 +5,21 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { withApiSession } from "@libs/server/withSession";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
-  const profile = await client.user.findUnique({
+  const {
+    session: { user },
+  } = req;
+  const purchases = await client.purchase.findMany({
     where: {
-      id: req.session.user?.id,
+      userId: user?.id,
+    },
+    include: {
+      product: true,
     },
   });
   res.json({
     ok: true,
-    profile,
+    purchases,
   });
-  res.status(200).end();
 }
 
 export default withApiSession(
