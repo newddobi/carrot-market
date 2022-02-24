@@ -30,7 +30,7 @@ model User {
   fav             Fav[]
   sales           Sale[]
   purchase        Purchase[]
-  recodr          Record[]
+  record          Record[]
 }
 
 model Token {
