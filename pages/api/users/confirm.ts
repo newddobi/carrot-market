@@ -6,12 +6,14 @@ import { json } from "stream/consumers";
 
 async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) {
   const { token } = req.body;
+  console.log(token);
   const foundToken = await client.token.findUnique({
     where: {
       payload: token,
     },
     include: { user: true },
   });
+  console.log(foundToken);
   if (!foundToken) return res.status(404).end();
   req.session.user = {
     id: foundToken.userId,
@@ -25,4 +27,4 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
   res.json({ ok: true });
 }
 
-export default withApiSession(withHandler({ methods: ["POST"], handler }));
+export default withApiSession(withHandler({ methods: ["POST"], handler, isPrivate: false }));
