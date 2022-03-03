@@ -4,11 +4,12 @@ import Layout from "@components/layout";
 import { useRouter } from "next/router";
 import useSWR, { useSWRConfig } from "swr";
 import Link from "next/link";
-import { Product, User } from "@prisma/client";
+import { ChatRoom, Product, User } from "@prisma/client";
 import useMutation from "@libs/client/useMutation";
 import { cls } from "@libs/client/utils";
 import useUser from "@libs/client/useUser";
 import Image from "next/image";
+import { useEffect } from "react";
 
 interface ProductWithuser extends Product {
   user: User;
@@ -21,24 +22,38 @@ interface ItemDetailResponse {
   isLiked: boolean;
 }
 
+interface CreateChatRoomMutation {
+  ok: boolean;
+  chatRoom: ChatRoom;
+}
+
 const ItemDetail: NextPage = () => {
-  const { user, isLoading } = useUser();
   const router = useRouter();
-  const { mutate } = useSWRConfig();
   const { data, mutate: boundMutate } = useSWR<ItemDetailResponse>(
     router.query.id ? `/api/products/${router.query.id}` : null
   );
   const [toggleFav] = useMutation(`/api/products/${router.query.id}/fav`);
+  const [createChatRoom, { loading, data: chatRoomData }] =
+    useMutation<CreateChatRoomMutation>(`/api/chats`);
   const onFavClick = () => {
     if (!data) return;
     boundMutate((prev) => prev && { ...data, isLiked: !data.isLiked }, false);
     // mutate("/api/users/me", (prev: any) => ({ ok: !prev.ok }), false);
     toggleFav({});
   };
+  const onTalkToSellerClick = async () => {
+    const result = await createChatRoom({ receiverId: data?.product?.user.id });
+  };
+
+  useEffect(() => {
+    if (chatRoomData?.ok) {
+      router.push(`/chats/${chatRoomData?.chatRoom.id}`);
+    }
+  }, [chatRoomData, router]);
 
   return (
     <Layout canGoBack seoTitle="Product Detail">
-      <div className="px-4  py-4">
+      <div className="px-4 py-4">
         <div className="mb-8">
           <div className="relative pb-80">
             <Image
@@ -66,7 +81,7 @@ const ItemDetail: NextPage = () => {
             <span className="text-2xl block mt-3 text-gray-900">${data?.product?.price}</span>
             <p className=" my-6 text-gray-700">{data?.product?.description}</p>
             <div className="flex items-center justify-between space-x-2">
-              <Button large text="Talk to seller" />
+              <Button large text="Talk to seller" onClick={onTalkToSellerClick} />
               <button
                 onClick={onFavClick}
                 className={cls(

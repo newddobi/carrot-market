@@ -25,7 +25,8 @@ export default function ProductList({ kind }: ProductListProps) {
           title={record.product.name}
           price={record.product.price}
           comments={1}
-          hearts={record.product._count.favs}
+          hearts={record.product?._count.favs || 0}
+          image={record.product.image}
         />
       ))}
     </>

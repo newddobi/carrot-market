@@ -9,6 +9,8 @@ import useMutation from "@libs/client/useMutation";
 import { cls } from "@libs/client/utils";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
+import useUser from "@libs/client/useUser";
+import Image from "next/image";
 
 interface AnswerWithUser extends Answer {
   user: User;
@@ -39,6 +41,7 @@ interface AnswerResponse {
 
 const CommunityPostDetail: NextPage = () => {
   const router = useRouter();
+  const { user } = useUser();
   const { register, handleSubmit, reset } = useForm<AnswerForm>();
   const { data, mutate } = useSWR<CommnunityPostResponse>(
     router.query.id ? `/api/posts/${router.query.id}` : null
@@ -82,13 +85,18 @@ const CommunityPostDetail: NextPage = () => {
   }, [answerData, reset, mutate]);
 
   return (
-    <Layout canGoBack>
+    <Layout canGoBack seoTitle="Community">
       <div>
         <span className="inline-flex my-3 ml-4 items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
           동네질문
         </span>
-        <div className="flex mb-3 px-4 cursor-pointer pb-3  border-b items-center space-x-3">
-          <div className="w-10 h-10 rounded-full bg-slate-300" />
+        <div className="flex cursor-pointer py-3 border-t border-b items-center space-x-3">
+          <Image
+            width={48}
+            height={48}
+            src={`https://imagedelivery.net/_fA90_CnLcX38I7jOJ6-uw/${data?.post?.user.avatar}/avatar`}
+            className="w-12 h-12 rounded-full bg-slate-300"
+          />
           <div>
             <p className="text-sm font-medium text-gray-700">{data?.post?.user?.name}</p>
             <Link href={`/users/profiles/${data?.post?.user?.id}`}>
@@ -146,7 +154,13 @@ const CommunityPostDetail: NextPage = () => {
         <div className="px-4 my-5 space-y-5">
           {data?.post?.answers?.map((answer) => (
             <div key={answer.id} className="flex items-start space-x-3">
-              <div className="w-8 h-8 bg-slate-200 rounded-full" />
+              {/* <div className="w-8 h-8 bg-slate-200 rounded-full" /> */}
+              <Image
+                width={40}
+                height={40}
+                src={`https://imagedelivery.net/_fA90_CnLcX38I7jOJ6-uw/${answer?.user.avatar}/avatar`}
+                className="w-8 h-8 rounded-full bg-slate-300"
+              />
               <div>
                 <span className="text-sm block font-medium text-gray-700">{answer.user.name}</span>
                 <span className="text-xs text-gray-500 block ">{answer.createdAt}</span>

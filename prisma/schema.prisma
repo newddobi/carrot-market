@@ -33,6 +33,8 @@ model User {
   record          Record[]
   streams         Stream[]
   messages        Message[]
+  senderRooms     ChatRoom[]  @relation(name: "senderRooms")
+  receiverRooms   ChatRoom[]  @relation(name: "receiverRooms")
 }
 
 model Token {
@@ -176,4 +178,26 @@ model Message {
   message   String   @db.MediumText
   stream    Stream   @relation(fields: [streamId], references: [id], onDelete: Cascade)
   streamId  Int
+}
+
+model ChatRoom {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  sender     User     @relation(name: "senderRooms", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId   Int
+  receiver   User     @relation(name: "receiverRooms", fields: [receiverId], references: [id], onDelete: Cascade)
+  receiverId Int
+  chats      Chat[]
+}
+
+model Chat {
+  id         Int      @id @default(autoincrement())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  chatRoom   ChatRoom @relation(fields: [chatRoomId], references: [id], onDelete: Cascade)
+  chatRoomId Int
+  message    String   @db.MediumText
+  senderId   Int
+  receiverId Int
 }
