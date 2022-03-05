@@ -24,7 +24,7 @@ const Community: NextPage = () => {
     latitude && longitude ? `/api/posts?latitude=${latitude}&longitude=${longitude}` : null
   );
   return (
-    <Layout hasTabBar title="동네생활">
+    <Layout hasTabBar title="동네생활" seoTitle="Community">
       <div className="space-y-4 divide-y-[2px]">
         {data?.posts?.map((post, i) => (
           <Link key={post.id} href={`/community/${post.id}`}>
