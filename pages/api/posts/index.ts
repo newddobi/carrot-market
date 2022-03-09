@@ -23,7 +23,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse<ResponseType>) 
       },
     });
 
-    // await res.unstable_revalidate("/community");
+    await res.unstable_revalidate("/community");
 
     res.json({
       ok: true,
